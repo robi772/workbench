@@ -1,25 +1,38 @@
-.PHONY: build prepare run test seed down setup-apps
+.PHONY: build prepare run test seed down reset setup
 
-default: run
+PROJECT=workbench
 
-build:
-	docker-compose build peatio barong
+DCEXE=docker-compose
+DCFLAGS=-p $(PROJECT)
+DC=$(DCEXE) $(DCFLAGS)
 
-prepare:
-	docker-compose up -d db redis rabbitmq smtp_relay coinhub peatio_daemons
+DOCKER=docker
 
-setup-apps: build
-	docker-compose run --rm peatio "./bin/setup"
-	docker-compose run --rm barong "./bin/setup"
+%:
+	$(DC) $@
 
-run: prepare setup-apps
+start:
 	docker-compose up peatio barong
 
 test: prepare
-	@docker-compose run --rm peatio_specs
+	docker-compose run --rm peatio_specs
+
+reset: purge
+	docker-compose run --rm peatio "rake db:create db:migrate"
+	docker-compose run --rm barong "rake db:create db:migrate"
 
 seed:
-	@docker-compose run --rm peatio "rake db:seed"
+	docker-compose run --rm peatio "rake db:seed"
+
+run-rm:
+	$(DC) peatio "rake db:create db:migrate"
+	$(DC) barong "rake db:create db:migrate"
+
+reset-db:
+	$(DOCKER) volume rm $(PROJECT)_db_data
 
 down:
-	@docker-compose down
+	$(DC) down
+
+purge: down reset-db
+
