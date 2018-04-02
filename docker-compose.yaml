@@ -3,7 +3,7 @@ version: '3'
 services:
   peatio:
     build:
-      context: peatio
+      context: apps/peatio
     depends_on:
       - db
       - redis
@@ -39,12 +39,12 @@ services:
       MARKETS_CONFIG: /opt/peatio/config/markets.yml
       CURRENCIES_CONFIG: /opt/peatio/config/currencies.yml
     volumes:
-      - ./peatio:/home/app
+      - ./apps/peatio:/home/app
       - ./config/peatio:/opt/peatio/config:ro
 
   peatio_daemons:
     build:
-      context: peatio
+      context: apps/peatio
     depends_on:
       - db
       - redis
@@ -65,13 +65,13 @@ services:
       MARKETS_CONFIG: /opt/peatio/config/markets.yml
       CURRENCIES_CONFIG: /opt/peatio/config/currencies.yml
     volumes:
-      - ./peatio:/home/app
+      - ./apps/peatio:/home/app
       - ./config/peatio:/opt/peatio/config:ro
     command: god -c lib/daemons/daemons.god -D start
 
   peatio_specs:
     build:
-      context: peatio
+      context: apps/peatio
     depends_on:
       - db
       - redis
@@ -88,12 +88,12 @@ services:
       TEST_APP_HOST: peatio
       TEST_APP_PORT: 8080
     volumes:
-      - ./peatio:/home/app
+      - ./apps/peatio:/home/app
     command: rspec --exclude-pattern=spec/features/**/*_spec.rb
 
   barong:
     build:
-      context: barong
+      context: apps/barong
     depends_on:
       - db
       - vault
@@ -108,7 +108,7 @@ services:
       VAULT_TOKEN: changeme
       VAULT_ADDR: http://vault:8200
     volumes:
-      - ./barong:/home/app
+      - ./apps/barong:/home/app
 
   coinhub:
     image: rubykube/coinhub

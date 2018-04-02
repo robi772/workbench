@@ -1,0 +1,6 @@
+[submodule "apps/barong"]
+	path = apps/barong
+	url = git@github.com:rubykube/barong.git
+[submodule "apps/peatio"]
+	path = apps/peatio
+	url = git@github.com:rubykube/peatio.git
